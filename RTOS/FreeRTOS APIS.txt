@@ -1,0 +1,90 @@
+1- Sempaphores:
+ 1- Define the semaphore:
+ xSemaphoreHandle name;
+ i.e: xSemaphoreHandle CLCDSem;
+ 
+ 2- Create a binary semaphore:
+ vSemaphoreCreateBinary(Semahphore_name);
+ i.e: vSemaphoreCreateBinary(CLCDSem);
+ 
+ 3- Create a counting semaphore:
+ SemaphoreHandle_t xSemaphoreCreateCounting(uxMaxCount, uxInitialCount);
+ return : 1- NULL: semaphore not created because no memory
+		  2- Any other value: handle to the created semaphore
+ i.e: CLCDSem = xSemaphoreCreateCounting (5,5);
+	  if(CLCDSem != NULL)
+	  {
+		//created successfully
+	  }
+	  else
+	  {
+		// not created , don't do anything
+	  }
+ 4- Pend(take) the semaphore
+ BaseType_t xSemaphoreTake(xSemaphore, xTicksToWait);
+ return: 1- pdPASS : Semaphore is available and the function decremented the semaphore
+		 2- pdFAIL: Semaphore = zero, your task is suspended until semaphore is released or TicksToWait are passed
+		 
+ 5- Give(Post) Sempahore
+ BaseType_t xSemaphoreGive(xSemaphore);
+ return: 1- pdPASS : giving semaphore is successfull, semaphore is incremented
+ 		 2- pdFAIL : Semaphore is already has its max count, couln't be incremented
+		
+=======================================================================================================		
+		 
+2- Queue
+ 1- Define the queue 
+ xQueueHandle Buffer;
+ 
+ 2- Creating the queue:
+ xQueueCreate(Length, ItemSize);
+ return : 1- NULL: no memory
+		  2- Any other value: handle to the created queue
+ i.e: Buffer = xQueueCreate(6,sizeof(u8));
+ 
+ 3- Sending to the queue:
+ xQueueSend(Queue,*pvItem, xTicksToWait);
+ return: 1- pdPASS: if data is successfully sent
+		 2- pdFAIL: Queue is full
+ i.e: u8 SendingStatus = xQueueSend(Buffer, &Var, 0);	 
+ 
+ 4- Receive(Read) from Queue
+ xQueueReceive(Queue, *pvBuffer, xTicksToWait);
+ return: 1- pdPASS: if data is successfully read
+		 2- pdFAIL: Queue is empty
+ i.e: xQueueReceive(Buffer, &Var, 0);
+ 
+========================================================================================================
+ 
+3- MailBox:
+ 1- Define: as queue
+ 2- Create:
+ xQueueCreate(1, ItemSize);
+ 
+ 3- Send:
+ xQueueOverWrite(xQueue, *pvItem);
+ 
+ 4- Receive(Without removing the data)
+ xQueuePeek(xQueue, *pvBuffer,xTicksToWait);
+ 
+==========================================================================================================
+ 
+4- EventGroups:
+ 1- Definition:
+ EventGroupHandle_t Group;
+ 
+ 2- Create:
+ Group= xEventGroupCreate();
+ return: 1- NULL: Fail to create(no memory)
+		 2- Anyother value: handle to the created event group
+ 
+ 3- SetBits:
+ xEventGroupSetBits(xEventGroup, uxBitsToSet);
+ i.e: xEventGroupSetBits(Group,0b100); // Set bit2
+ 
+ 4- WaitBits:
+ xEventGroupWaitBits(xEventGroup, uxBitsToWaitFor,xClearOnExit,xWaitForAllBits,xTicksToWait);
+ 1- uxBitsToWaitFor: Mask to the intersting events(0b0111) -> interested in events 0,1,2
+ 2- xClearOnExit: clear the bits after reading or not, pdTRUE: yes clear on exit, pdFALSE: don't clear on exit
+ 3- xWaitForAllBits: AND operation or OR operation, pdTRUE: AND , pdFALSE: OR
+ 
